@@ -1,0 +1,37 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="MIT"
+issueTrackerURL=""
+showAsResourcePack=false
+
+[[mods]]
+modId="createmoregears"
+version="${file.jarVersion}"
+displayName="Create: More Gears"
+logoFile="icon.png"
+credits="Special thanks to Phealoon for block models and icons."
+authors="TheDudeFromCI"
+description='''
+This mod is a simple addon for the Create mod that adds new gear types to the game.
+'''
+
+[[dependencies.createmoregears]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+# Here's another dependency
+[[dependencies.createmoregears]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16,1.17)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.createmoregears]]
+    modId="create"
+    mandatory=true
+    versionRange="[v0.3.2g]"
+    ordering="AFTER"
+    side="BOTH"
