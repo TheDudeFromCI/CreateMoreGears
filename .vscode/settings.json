@@ -12,6 +12,7 @@
     ".gradle": true,
     "gradlew": true,
     "gradlew.bat": true,
-    "bbmodels": true
+    "bbmodels": true,
+    "bin": true
   }
 }
