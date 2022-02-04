@@ -14,5 +14,6 @@
     "gradlew.bat": true,
     "bbmodels": true,
     "bin": true
-  }
+  },
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
