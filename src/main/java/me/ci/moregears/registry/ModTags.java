@@ -6,9 +6,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
 public class ModTags {
-  private static Tags.IOptionalNamedTag<Block> createForgeTag(String name) {
-    return BlockTags.createOptional(new ResourceLocation("forge", name));
-  }
+    private static Tags.IOptionalNamedTag<Block> createForgeTag(String name) {
+        return BlockTags.createOptional(new ResourceLocation("forge", name));
+    }
 
-  public final Tags.IOptionalNamedTag<Block> woodGear = createForgeTag("gear/wood");
+    public final Tags.IOptionalNamedTag<Block> woodGear = createForgeTag("gear/wood");
 }

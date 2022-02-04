@@ -1,10 +1,9 @@
 {
   "required": true,
-  "package": "me.ci.moregears.mixin",
+  "package": "me.ci.moregears.mixins",
   "compatibilityLevel": "JAVA_8",
   "refmap": "createmoregears.refmap.json",
-  "mixins": [
-  ],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   },

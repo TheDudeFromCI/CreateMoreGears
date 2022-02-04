@@ -16,36 +16,34 @@ import net.minecraft.block.material.Material;
 import net.minecraft.data.ShapedRecipeBuilder;
 
 public class ModBlocks {
-  public final BlockEntry<WormGearBlock> wormGear;
+    public final BlockEntry<WormGearBlock> wormGear;
 
-  public ModBlocks(CreateRegistrate registrate, ModTags tags) {
-    wormGear =
-        registrate
-            .block("worm_gear", WormGearBlock::new)
-            .initialProperties(Material.STONE)
-            .properties(p -> p.sound(SoundType.WOOD))
-            .transform(BlockStressDefaults.setNoImpact())
-            .blockstate(
-                (c, p) ->
-                    BlockStateGen.axisBlock(
-                        c, p, (b) -> p.models().getExistingFile(p.modLoc("block/worm_gear/block"))))
-            .onRegister(CreateRegistrate.blockModel(() -> BracketedKineticBlockModel::new))
-            .tag(tags.woodGear)
-            .defaultLoot()
-            .recipe(
-                (ctx, prov) -> {
-                  ShapedRecipeBuilder.shaped(ctx.get(), 2)
-                      .pattern("cc")
-                      .define('c', AllBlocks.COGWHEEL.get())
-                      .unlockedBy(
-                          "has_cogwheel",
-                          RegistrateRecipeProvider.hasItem(AllBlocks.COGWHEEL.get()))
-                      .save(prov);
-                })
-            .item(WormGearItem::new)
-            .build()
-            .register();
+    public ModBlocks(CreateRegistrate registrate, ModTags tags) {
+        wormGear = registrate
+                .block("worm_gear", WormGearBlock::new)
+                .initialProperties(Material.STONE)
+                .properties(p -> p.sound(SoundType.WOOD))
+                .transform(BlockStressDefaults.setNoImpact())
+                .blockstate(
+                        (c, p) -> BlockStateGen.axisBlock(
+                                c, p, (b) -> p.models().getExistingFile(p.modLoc("block/worm_gear/block"))))
+                .onRegister(CreateRegistrate.blockModel(() -> BracketedKineticBlockModel::new))
+                .tag(tags.woodGear)
+                .defaultLoot()
+                .recipe(
+                        (ctx, prov) -> {
+                            ShapedRecipeBuilder.shaped(ctx.get(), 2)
+                                    .pattern("cc")
+                                    .define('c', AllBlocks.COGWHEEL.get())
+                                    .unlockedBy(
+                                            "has_cogwheel",
+                                            RegistrateRecipeProvider.hasItem(AllBlocks.COGWHEEL.get()))
+                                    .save(prov);
+                        })
+                .item(WormGearItem::new)
+                .build()
+                .register();
 
-    Create.registrate().addToSection(wormGear, AllSections.KINETICS);
-  }
+        Create.registrate().addToSection(wormGear, AllSections.KINETICS);
+    }
 }
