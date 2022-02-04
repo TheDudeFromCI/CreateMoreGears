@@ -3,7 +3,9 @@
   "package": "me.ci.moregears.mixins",
   "compatibilityLevel": "JAVA_8",
   "refmap": "createmoregears.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "LargeCogwheelPlacementHelperMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

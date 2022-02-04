@@ -29,6 +29,15 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.World;
 
 public class WormGearItem extends CogwheelBlockItem {
+
+    public static boolean isWormGearItem(ItemStack test) {
+        Item item = test.getItem();
+        if (!(item instanceof BlockItem))
+            return false;
+
+        return ((BlockItem) item).getBlock() instanceof WormGearBlock;
+    }
+
     public WormGearItem(CogWheelBlock block, Properties builder) {
         super(block, builder);
 
@@ -44,14 +53,6 @@ public class WormGearItem extends CogwheelBlockItem {
         } catch (Exception e) {
             CreateMoreGears.LOGGER.error("Failed to override placement helpers for Worm Gear!", e);
         }
-    }
-
-    public static boolean isWormGearItem(ItemStack test) {
-        Item item = test.getItem();
-        if (!(item instanceof BlockItem))
-            return false;
-
-        return ((BlockItem) item).getBlock() instanceof WormGearBlock;
     }
 
     @MethodsReturnNonnullByDefault

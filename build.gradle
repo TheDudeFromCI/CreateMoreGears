@@ -39,15 +39,6 @@ version = "${minecraft_version}-${mod_version}" + (dev ? '-dev' : '')
 archivesBaseName = modid
 
 
-buildConfig {
-    buildConfigField 'String', 'MODID', "\"${modid}\""
-    buildConfigField 'String', 'VERSION', "\"${project.version}\""
-    buildConfigField 'String', 'DISPLAY_NAME', "\"${display_name}\""
-
-    version = project.version
-    packageName = project.group
-}
-
 minecraft {
     mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -135,6 +126,11 @@ dependencies {
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 }
 
+mixin {
+    add sourceSets.main, "${modid}.refmap.json"
+    config "${modid}.mixins.json"
+}
+
 jar {
     manifest {
         attributes([
@@ -145,9 +141,22 @@ jar {
             "Implementation-Version"  : project.version,
             "Implementation-Vendor"   : author,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            "TweakClass"              : "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder"              : "0",
             "MixinConfigs"            : "${modid}.mixins.json"
         ])
     }
+
+    rename "mixin.refmap.json", "${modid}.refmap.json"
+}
+
+buildConfig {
+    buildConfigField 'String', 'MODID', "\"${modid}\""
+    buildConfigField 'String', 'VERSION', "\"${project.version}\""
+    buildConfigField 'String', 'DISPLAY_NAME', "\"${display_name}\""
+
+    version = project.version
+    packageName = project.group
 }
 
 task deobfJar(type: Jar) {
@@ -166,10 +175,6 @@ task sourcesJar(type: Jar) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
     archiveClassifier.set('javadoc')
-}
-
-mixin {
-    add sourceSets.main, "${modid}.refmap.json"
 }
 
 artifacts {

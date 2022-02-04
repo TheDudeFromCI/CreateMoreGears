@@ -30,10 +30,31 @@ public class WormGearTile extends SimpleKineticTileEntity {
         }
 
         if (isWormGearToLargeCog(stateFrom, stateTo, diff)) {
-            if (nonZeroElement(diff) < 0)
-                return 1 / 8f;
-            else
-                return -1 / 8f;
+            final float pr = 1 / 8f;
+            final float nr = -1 / 8f;
+            boolean flip = nonZeroElement(diff) >= 0;
+            Axis axis = stateFrom.getValue(AXIS);
+
+            // Probably not the prettyist way to do this, but...
+            if (axis == Axis.X) {
+                if (diff.getY() != 0) {
+                    return flip ? nr : pr;
+                } else {
+                    return flip ? pr : nr;
+                }
+            } else if (axis == Axis.Y) {
+                if (diff.getX() != 0) {
+                    return flip ? pr : nr;
+                } else {
+                    return flip ? nr : pr;
+                }
+            } else {
+                if (diff.getX() != 0) {
+                    return flip ? nr : pr;
+                } else {
+                    return flip ? pr : nr;
+                }
+            }
         }
 
         return 0;
