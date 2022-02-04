@@ -3,8 +3,6 @@ package me.ci.moregears.items;
 import static com.simibubi.create.content.contraptions.base.RotatedPillarKineticBlock.AXIS;
 
 import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.contraptions.base.DirectionalKineticBlock;
-import com.simibubi.create.content.contraptions.base.HorizontalKineticBlock;
 import com.simibubi.create.content.contraptions.relays.elementary.CogWheelBlock;
 import com.simibubi.create.content.contraptions.relays.elementary.CogwheelBlockItem;
 import com.simibubi.create.content.contraptions.relays.elementary.ICogWheel;
@@ -12,6 +10,7 @@ import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.placement.IPlacementHelper;
 import com.simibubi.create.foundation.utility.placement.PlacementHelpers;
 import com.simibubi.create.foundation.utility.placement.PlacementOffset;
+import com.simibubi.create.content.contraptions.base.IRotate;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Predicate;
@@ -33,10 +32,8 @@ public class WormGearItem extends CogwheelBlockItem {
     public WormGearItem(CogWheelBlock block, Properties builder) {
         super(block, builder);
 
-        // Parent fields are private, so we need to use reflection to set these.
-
+        // Parent field is private, so we need to use reflection to set this.
         int placementHelper = PlacementHelpers.register(new WormGearHelper());
-        int integratedHelper = PlacementHelpers.register(new IntegratedWormGearHelper());
 
         try {
             Class<CogwheelBlockItem> cls = CogwheelBlockItem.class;
@@ -44,10 +41,6 @@ public class WormGearItem extends CogwheelBlockItem {
             Field placementHelperId = cls.getDeclaredField("placementHelperId");
             placementHelperId.setAccessible(true);
             placementHelperId.set(this, placementHelper);
-
-            Field integratedCogHelperId = cls.getDeclaredField("integratedCogHelperId");
-            integratedCogHelperId.setAccessible(true);
-            integratedCogHelperId.set(this, integratedHelper);
         } catch (Exception e) {
             CreateMoreGears.LOGGER.error("Failed to override placement helpers for Worm Gear!", e);
         }
@@ -90,7 +83,10 @@ public class WormGearItem extends CogwheelBlockItem {
                 if (!world.getBlockState(newPos).getMaterial().isReplaceable())
                     continue;
 
-                return PlacementOffset.success(newPos, s -> s.setValue(AXIS, state.getValue(AXIS)));
+                Axis axis = ((IRotate) state.getBlock()).getRotationAxis(state);
+                Axis targetAxis = Axis.values()[3 - (axis.ordinal() ^ dir.getAxis().ordinal())];
+
+                return PlacementOffset.success(newPos, s -> s.setValue(AXIS, targetAxis));
             }
 
             return PlacementOffset.fail();
@@ -102,54 +98,6 @@ public class WormGearItem extends CogwheelBlockItem {
                     .bounds()
                     .inflate(0.001)
                     .contains(ray.getLocation().subtract(ray.getLocation().align(Iterate.axisSet)));
-        }
-    }
-
-    @MethodsReturnNonnullByDefault
-    private static class IntegratedWormGearHelper implements IPlacementHelper {
-
-        @Override
-        public Predicate<ItemStack> getItemPredicate() {
-            return WormGearItem::isWormGearItem;
-        }
-
-        @Override
-        public Predicate<BlockState> getStatePredicate() {
-            return ICogWheel::isLargeCog;
-        }
-
-        @Override
-        public PlacementOffset getOffset(
-                PlayerEntity player, World world, BlockState state, BlockPos pos, BlockRayTraceResult ray) {
-
-            Direction face = ray.getDirection();
-            Axis newAxis;
-
-            if (state.hasProperty(HorizontalKineticBlock.HORIZONTAL_FACING))
-                newAxis = state.getValue(HorizontalKineticBlock.HORIZONTAL_FACING).getAxis();
-            else if (state.hasProperty(DirectionalKineticBlock.FACING))
-                newAxis = state.getValue(DirectionalKineticBlock.FACING).getAxis();
-            else
-                newAxis = Axis.Y;
-
-            if (face.getAxis() == newAxis)
-                return PlacementOffset.fail();
-
-            List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(pos, ray.getLocation(), newAxis);
-
-            for (Direction d : directions) {
-                BlockPos newPos = pos.relative(d);
-
-                if (!world.getBlockState(newPos).getMaterial().isReplaceable())
-                    continue;
-
-                if (!CogWheelBlock.isValidCogwheelPosition(false, world, newPos, newAxis))
-                    return PlacementOffset.fail();
-
-                return PlacementOffset.success().at(newPos).withTransform(s -> s.setValue(AXIS, newAxis));
-            }
-
-            return PlacementOffset.fail();
         }
     }
 }
