@@ -30,12 +30,10 @@ public class WormGearTile extends SimpleKineticTileEntity {
         }
 
         if (isWormGearToLargeCog(stateFrom, stateTo, diff)) {
-            Axis sourceAxis = stateFrom.getValue(AXIS);
-            Axis targetAxis = stateTo.getValue(AXIS);
-            int sourceAxisDiff = sourceAxis.choose(diff.getX(), diff.getY(), diff.getZ());
-            int targetAxisDiff = targetAxis.choose(diff.getX(), diff.getY(), diff.getZ());
-
-            return sourceAxisDiff > 0 ^ targetAxisDiff > 0 ? -1 / 16f : 1 / 16f;
+            if (nonZeroElement(diff) < 0)
+                return 1 / 8f;
+            else
+                return -1 / 8f;
         }
 
         return 0;
@@ -61,5 +59,14 @@ public class WormGearTile extends SimpleKineticTileEntity {
         }
 
         return true;
+    }
+
+    private static int nonZeroElement(BlockPos pos) {
+        if (pos.getX() != 0)
+            return pos.getX();
+        else if (pos.getY() != 0)
+            return pos.getY();
+        else
+            return pos.getZ();
     }
 }
