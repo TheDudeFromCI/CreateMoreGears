@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "createmoregears.refmap.json",
   "mixins": [
-    "LargeCogwheelPlacementHelperMixin"
+    "LargeCogwheelPlacementHelperMixin",
+    "RotationPropagatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

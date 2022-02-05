@@ -5,6 +5,8 @@ import static net.minecraft.state.properties.BlockStateProperties.AXIS;
 import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.relays.elementary.ICogWheel;
 import com.simibubi.create.content.contraptions.relays.elementary.SimpleKineticTileEntity;
+
+import me.ci.moregears.blocks.WormGearBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction.Axis;
@@ -30,29 +32,29 @@ public class WormGearTile extends SimpleKineticTileEntity {
         }
 
         if (isWormGearToLargeCog(stateFrom, stateTo, diff)) {
-            final float pr = 1 / 8f;
-            final float nr = -1 / 8f;
+            final float ratio = 1 / 8f;
+
             boolean flip = nonZeroElement(diff) >= 0;
             Axis axis = stateFrom.getValue(AXIS);
 
             // Probably not the prettyist way to do this, but...
             if (axis == Axis.X) {
                 if (diff.getY() != 0) {
-                    return flip ? nr : pr;
+                    return flip ? -ratio : ratio;
                 } else {
-                    return flip ? pr : nr;
+                    return flip ? ratio : -ratio;
                 }
             } else if (axis == Axis.Y) {
                 if (diff.getX() != 0) {
-                    return flip ? pr : nr;
+                    return flip ? ratio : -ratio;
                 } else {
-                    return flip ? nr : pr;
+                    return flip ? -ratio : ratio;
                 }
             } else {
                 if (diff.getX() != 0) {
-                    return flip ? nr : pr;
+                    return flip ? -ratio : ratio;
                 } else {
-                    return flip ? pr : nr;
+                    return flip ? ratio : -ratio;
                 }
             }
         }
@@ -61,6 +63,9 @@ public class WormGearTile extends SimpleKineticTileEntity {
     }
 
     private boolean isWormGearToLargeCog(BlockState from, BlockState to, BlockPos diff) {
+        if (!(from.getBlockState().getBlock() instanceof WormGearBlock))
+            return false;
+
         if (!ICogWheel.isLargeCog(to))
             return false;
 

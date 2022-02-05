@@ -29,14 +29,14 @@ import net.minecraft.world.World;
 public abstract class LargeCogwheelPlacementHelperMixin {
 
     @Inject(method = "getItemPredicate", at = @At("RETURN"), cancellable = true, remap = false)
-    public void onGetItemPredicate(CallbackInfoReturnable<Predicate<ItemStack>> ci) {
+    private void onGetItemPredicate(CallbackInfoReturnable<Predicate<ItemStack>> ci) {
         Predicate<ItemStack> pred = WormGearItem::isWormGearItem;
         pred = pred.or(ci.getReturnValue());
         ci.setReturnValue(pred);
     }
 
     @Inject(method = "getOffset", at = @At("HEAD"), cancellable = true, remap = false)
-    public void onGetOffset(PlayerEntity player, World world, BlockState state, BlockPos pos,
+    private void onGetOffset(PlayerEntity player, World world, BlockState state, BlockPos pos,
             BlockRayTraceResult ray, CallbackInfoReturnable<PlacementOffset> ci) {
 
         if (WormGearBlock.isWormGear(state)) {
@@ -55,9 +55,7 @@ public abstract class LargeCogwheelPlacementHelperMixin {
         for (Direction dir : directions) {
             BlockPos newPos = pos.relative(dir);
 
-            if (!world.getBlockState(newPos)
-                    .getMaterial()
-                    .isReplaceable())
+            if (!world.getBlockState(newPos).getMaterial().isReplaceable())
                 continue;
 
             Axis axis = ((IRotate) state.getBlock()).getRotationAxis(state);
