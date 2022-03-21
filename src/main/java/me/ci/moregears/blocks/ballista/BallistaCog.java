@@ -6,16 +6,18 @@ import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.base.RotatingData;
 import com.simibubi.create.content.contraptions.base.SingleRotatingInstance;
 
+import me.ci.moregears.registry.ModBlockPartials;
+
 public class BallistaCog extends SingleRotatingInstance {
 
     public BallistaCog(MaterialManager<?> modelManager, KineticTileEntity tile) {
         super(modelManager, tile);
     }
 
-    // @Override
-    // protected Instancer<RotatingData> getModel() {
-    // return getRotatingMaterial().getModel(ModBlockPartials.BALLISTA_COGWHEEL,
-    // tile.getBlockState());
-    // }
+    @Override
+    protected Instancer<RotatingData> getModel() {
+        return getRotatingMaterial()
+            .getModel(ModBlockPartials.BALLISTA_COGWHEEL, tile.getBlockState());
+    }
 
 }

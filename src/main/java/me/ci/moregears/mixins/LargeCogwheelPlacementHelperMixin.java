@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import me.ci.moregears.blocks.WormGearBlock;
-import me.ci.moregears.items.WormGearItem;
+import me.ci.moregears.blocks.worm_gear.WormGearBlock;
+import me.ci.moregears.blocks.worm_gear.WormGearItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,7 +37,7 @@ public abstract class LargeCogwheelPlacementHelperMixin {
 
     @Inject(method = "getOffset", at = @At("HEAD"), cancellable = true, remap = false)
     private void onGetOffset(PlayerEntity player, World world, BlockState state, BlockPos pos,
-            BlockRayTraceResult ray, CallbackInfoReturnable<PlacementOffset> ci) {
+        BlockRayTraceResult ray, CallbackInfoReturnable<PlacementOffset> ci) {
 
         if (WormGearBlock.isWormGear(state)) {
             PlacementOffset offset = getWormGearOffset(world, state, pos, ray);
@@ -47,10 +47,10 @@ public abstract class LargeCogwheelPlacementHelperMixin {
     }
 
     private PlacementOffset getWormGearOffset(World world, BlockState state, BlockPos pos,
-            BlockRayTraceResult ray) {
+        BlockRayTraceResult ray) {
 
         List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(pos, ray.getLocation(),
-                state.getValue(AXIS));
+            state.getValue(AXIS));
 
         for (Direction dir : directions) {
             BlockPos newPos = pos.relative(dir);

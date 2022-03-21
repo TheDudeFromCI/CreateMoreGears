@@ -3,6 +3,7 @@ package me.ci.moregears;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.NonNullLazyValue;
 
+import me.ci.moregears.registry.ModBlockPartials;
 import me.ci.moregears.registry.ModBlocks;
 import me.ci.moregears.registry.ModItemGroups;
 import me.ci.moregears.registry.ModTiles;
@@ -27,6 +28,7 @@ public class CreateMoreGears {
     public CreateMoreGears() {
         ModItemGroups.register();
         ModBlocks.register();
+        ModBlockPartials.register();
         ModTiles.register();
     }
 }

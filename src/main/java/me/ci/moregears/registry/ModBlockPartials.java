@@ -8,6 +8,8 @@ import net.minecraft.util.ResourceLocation;
 public final class ModBlockPartials {
 
     public static final PartialModel BALLISTA_COGWHEEL = get("ballista/cogwheel");
+    public static final PartialModel BALLISTA_TURNTABLE = get("ballista/turntable");
+    public static final PartialModel BALLISTA_CROSSBOW = get("ballista/crossbow");
 
     private static PartialModel get(String path) {
         ResourceLocation loc = new ResourceLocation(CreateMoreGears.MOD_ID, "block/" + path);
@@ -18,6 +20,6 @@ public final class ModBlockPartials {
         // Load static fields
     }
 
-    private ModBlockPartials(){
+    private ModBlockPartials() {
     }
 }

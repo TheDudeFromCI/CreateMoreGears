@@ -12,9 +12,9 @@ import com.simibubi.create.foundation.data.ModelGen;
 import com.simibubi.create.repack.registrate.util.entry.BlockEntry;
 
 import me.ci.moregears.CreateMoreGears;
-import me.ci.moregears.blocks.BallistaBlock;
-import me.ci.moregears.blocks.WormGearBlock;
-import me.ci.moregears.items.WormGearItem;
+import me.ci.moregears.blocks.ballista.BallistaBlock;
+import me.ci.moregears.blocks.worm_gear.WormGearBlock;
+import me.ci.moregears.blocks.worm_gear.WormGearItem;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.data.ShapedRecipeBuilder;

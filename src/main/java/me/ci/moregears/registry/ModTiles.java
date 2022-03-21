@@ -6,8 +6,10 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.entry.TileEntityEntry;
 
 import me.ci.moregears.CreateMoreGears;
-import me.ci.moregears.tiles.BallistaTile;
-import me.ci.moregears.tiles.WormGearTile;
+import me.ci.moregears.blocks.ballista.BallistaCog;
+import me.ci.moregears.blocks.ballista.BallistaRenderer;
+import me.ci.moregears.blocks.ballista.BallistaTile;
+import me.ci.moregears.blocks.worm_gear.WormGearTile;
 
 public final class ModTiles {
 
@@ -22,9 +24,9 @@ public final class ModTiles {
 
     public static final TileEntityEntry<BallistaTile> BALLISTA = REGISTRATE
         .tileEntity("ballista", BallistaTile::new)
-        .instance(() -> SingleRotatingInstance::new)
+        .instance(() -> BallistaCog::new)
         .validBlock(ModBlocks.BALLISTA)
-        .renderer(() -> KineticTileEntityRenderer::new)
+        .renderer(() -> BallistaRenderer::new)
         .register();
 
     public static void register() {

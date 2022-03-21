@@ -1,16 +1,18 @@
-package me.ci.moregears.blocks;
+package me.ci.moregears.blocks.ballista;
 
 import com.simibubi.create.content.contraptions.base.KineticBlock;
 import com.simibubi.create.content.contraptions.relays.elementary.ICogWheel;
 import com.simibubi.create.foundation.block.ITE;
 
+import me.ci.moregears.registry.ModShapes;
 import me.ci.moregears.registry.ModTiles;
-import me.ci.moregears.tiles.BallistaTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 
@@ -41,8 +43,9 @@ public class BallistaBlock extends KineticBlock implements ITE<BallistaTile>, IC
     }
 
     @Override
-    public SpeedLevel getMinimumRequiredSpeedLevel() {
-        return SpeedLevel.of(8);
+    @Deprecated
+    public VoxelShape getShape(BlockState pState, IBlockReader pLevel, BlockPos pPos, ISelectionContext pContext) {
+        return ModShapes.BALLISTA_BASE;
     }
 
 }
