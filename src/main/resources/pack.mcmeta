@@ -1,7 +1,6 @@
 {
     "pack": {
-        "description": "Create: More Gears - Resources",
-        "pack_format": 6,
-        "_comment": "Contains model and texture data for additional gear blocks and items."
+        "description": "${modDescription}",
+        "pack_format": 6
     }
 }
