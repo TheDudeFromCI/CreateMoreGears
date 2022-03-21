@@ -1,0 +1,64 @@
+apply from: 'gradle/property_helper.gradle'
+
+repositories {
+
+    // This maven repository hosts files for hundreds of mods. Some notable
+    // mods include Bookshelf, Botania, BotanyPots, CraftTweaker, DarkUtils,
+    // GameStages, Patchouli, Psi, and Quark.
+    maven {
+
+        url 'https://maven.blamejared.com'
+    }
+
+    // This maven repository hosts files for dozens of mods. Some notable
+    // mods include JEI, TinkersConstruct, and ChiselAndBits.
+    maven {
+
+        url 'https://dvs1.progwml6.com/files/maven'
+    }
+
+    // This maven repository hosts files for mods by TheIllusiveC4. This
+    // includes Curios, Caelus, and other APIs.
+    maven {
+
+        url = 'https://maven.theillusivec4.top/'
+    }
+
+    // This maven repository proxies requests to the CurseForge API. This will
+    // allow mods without traditional mavens to be used in a dev environment.
+    // They use the pattern curse.maven:<descriptor>-<projectid>:<fileid> for
+    // maven coordinates.
+    maven {
+
+        url = 'https://www.cursemaven.com'
+
+        // Improve performance by only querying for their specific group.
+        content {
+
+            includeGroup 'curse.maven'
+        }
+    }
+}
+
+dependencies {
+
+    def compiledDeps = getRequiredString('compiled_deps').split(",")
+    compiledDeps.each { modid ->
+        def group = getRequiredString("${modid}_group")
+        def name = getRequiredString("${modid}_name")
+        def version = getRequiredString("${modid}_version")
+
+        project.logger.lifecycle("Dependency ${modid} added. implementation \'${group}:${name}:${version}\'")
+        project.getDependencies().add('implementation', fg.deobf("${group}:${name}:${version}"))
+    }
+
+    def runtimeDeps = getRequiredString('runtime_deps').split(",")
+    runtimeDeps.each { modid ->
+        def group = getRequiredString("${modid}_group")
+        def name = getRequiredString("${modid}_name")
+        def version = getRequiredString("${modid}_version")
+
+        project.logger.lifecycle("Dependency ${modid} added. runtimeOnly \'${group}:${name}:${version}\'")
+        project.getDependencies().add('runtimeOnly', fg.deobf("${group}:${name}:${version}"))
+    }
+}
