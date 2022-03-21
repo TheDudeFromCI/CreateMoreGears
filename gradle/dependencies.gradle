@@ -24,6 +24,13 @@ repositories {
         url = 'https://maven.theillusivec4.top/'
     }
 
+    // This maven repository hosts files for the Create mod, Flywheel, Chisel,
+    // and similar mods.
+    maven {
+
+        url = 'https://maven.tterrag.com'
+    }
+
     // This maven repository proxies requests to the CurseForge API. This will
     // allow mods without traditional mavens to be used in a dev environment.
     // They use the pattern curse.maven:<descriptor>-<projectid>:<fileid> for
