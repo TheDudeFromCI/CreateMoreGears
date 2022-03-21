@@ -11,8 +11,6 @@ import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -107,7 +105,7 @@ public class BallistaTile extends KineticTileEntity {
             .filter(not(Entity::isInvisible))
             .filter(e -> e.distanceToSqr(aim) < RANGE * RANGE)
             .filter(e -> canSee(e, aim))
-            .sorted()
+            .sorted((a, b) -> Double.compare(a.distanceToSqr(aim), b.distanceToSqr(aim)))
             .collect(Collectors.toList());
 
         if (entities.isEmpty())
