@@ -1,211 +1,34 @@
-buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url='https://repo.spongepowered.org/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: forgegradle_version, changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: mixingradle_version
-        classpath "gradle.plugin.com.matthewprenger:CurseGradle:${cursegradle_version}"
-        classpath "org.parchmentmc:librarian:${librarian_version}"
-        classpath "com.wynprice.cursemaven:CurseMaven:${cursemaven_version}"
-    }
-}
-
-plugins {
-    id'com.github.gmazzo.buildconfig' version '3.0.1'
-}
-
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'com.matthewprenger.cursegradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
+apply from: 'gradle/property_helper.gradle'
+apply from: 'gradle/property_loader.gradle'
 
+// Load mod related properties
+ext.modName = getRequiredString('mod_name')
+ext.modAuthor = getRequiredString('mod_author')
+ext.modId = getRequiredString('mod_id')
+ext.modCredits = getDefaultString('mod_credits', ext.modAuthor)
+ext.modDescription = getOptionalString('mod_description')
+ext.modChangelog = getOptionalString('mod_changelog')
+ext.modHomepage = getOptionalString('mod_homepage')
+ext.modSource = getOptionalString('mod_source')
+ext.modIssues = getOptionalString('mod_issues')
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-compileJava.options.encoding = 'UTF-8'
-boolean dev = System.getenv('RELEASE') == null || System.getenv('RELEASE').equals('false');
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-println('Dev Build: ' + dev)
-println()
+// Load Minecraft specific properties
+ext.mcVersionMin = getRequiredString('minecraft_version_min')
+ext.mcVersion = getRequiredString('minecraft_version_max')
 
+// Load build-time modules
+apply from: 'gradle/build_number.gradle'
+apply from: 'gradle/git_changelog.gradle'
+apply from: 'gradle/patreon.gradle'
+apply from: 'gradle/java.gradle'
+apply from: 'gradle/forge.gradle'
+apply from: 'gradle/dependencies.gradle'
+apply from: 'gradle/minify_jsons.gradle'
 
-group = "mod.${author}.${modid}"
-version = "${minecraft_version}-${mod_version}" + (dev ? '-dev' : '')
-archivesBaseName = modid
-
-
-minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'info'
-
-            args "-mixin.config=${modid}.mixins.json".toString()
-
-            mods {
-                "${modid}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('server')
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'info'
-
-            args "-mixin.config=${modid}.mixins.json".toString()
-
-            mods {
-                "${modid}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            args "--mod", modid, "--all", "--output", file('src/generated/resources/'), "--existing", file('src/main/resources/')
-
-            mods {
-                "${modid}" {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-compileJava {
-    options.compilerArgs = ["-Xdiags:verbose"]
-}
-
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-}
-
-repositories {
-    maven {
-        url "https://maven.tterrag.com/"
-    }
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        url 'https://jitpack.io/'
-    }
-}
-
-dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation fg.deobf("com.simibubi.create:Create:mc${create_version}")
-    implementation fg.deobf("com.jozufozu.flywheel:Flywheel:${flywheel_version}")
-
-    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-}
-
-mixin {
-    add sourceSets.main, "${modid}.refmap.json"
-    config "${modid}.mixins.json"
-}
-
-jar {
-    manifest {
-        attributes([
-            "Specification-Title"     : modid,
-            "Specification-Vendor"    : author,
-            "Specification-Version"   : "1",
-            "Implementation-Title"    : project.name,
-            "Implementation-Version"  : project.version,
-            "Implementation-Vendor"   : author,
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "TweakClass"              : "org.spongepowered.asm.launch.MixinTweaker",
-            "TweakOrder"              : "0",
-            "MixinConfigs"            : "${modid}.mixins.json"
-        ])
-    }
-
-    rename "mixin.refmap.json", "${modid}.refmap.json"
-}
-
-buildConfig {
-    buildConfigField 'String', 'MODID', "\"${modid}\""
-    buildConfigField 'String', 'VERSION', "\"${project.version}\""
-    buildConfigField 'String', 'DISPLAY_NAME', "\"${display_name}\""
-
-    version = project.version
-    packageName = project.group
-}
-
-task deobfJar(type: Jar) {
-    from sourceSets.main.output
-    classifier 'deobf'
-}
-
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveBaseName.set(project.archivesBaseName)
-    archiveVersion.set("${project.version}")
-    archiveClassifier.set('sources')
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    archiveClassifier.set('javadoc')
-}
-
-artifacts {
-    archives jar, sourcesJar, javadocJar
-}
-
-publishing {
-    tasks.publish.dependsOn 'build'
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            artifact sourcesJar
-            artifact javadocJar
-        }
-    }
-
-    repositories {
-        if (project.hasProperty('mavendir')) {
-            maven {
-                url mavendir
-            }
-        }
-    }
-}
-
-
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-
-build.dependsOn deobfJar
-jar.finalizedBy('reobfJar')
+// Load publishing modules
+apply from: 'gradle/maven.gradle'
+apply from: 'gradle/signing.gradle'
+apply from: 'gradle/curseforge.gradle'
+apply from: 'gradle/version_checker.gradle'
