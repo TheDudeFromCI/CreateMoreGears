@@ -21,3 +21,4 @@ run
 src/generated
 libs
 bin
+.vscode
