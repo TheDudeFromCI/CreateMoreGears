@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "createmoregears:block/ballista/block"
+    }
+  }
+}

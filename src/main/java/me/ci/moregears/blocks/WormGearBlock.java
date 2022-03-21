@@ -3,7 +3,7 @@ package me.ci.moregears.blocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.contraptions.relays.elementary.CogWheelBlock;
 
-import me.ci.moregears.CreateMoreGears;
+import me.ci.moregears.registry.ModTiles;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -26,7 +26,7 @@ public class WormGearBlock extends CogWheelBlock {
 
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return CreateMoreGears.INSTANCE.tiles.wormGear.create();
+        return ModTiles.WORM_GEAR.create();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class WormGearBlock extends CogWheelBlock {
     @Override
     @Deprecated
     public VoxelShape getShape(
-            BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return AllShapes.SIX_VOXEL_POLE.get(state.getValue(AXIS));
     }
 
