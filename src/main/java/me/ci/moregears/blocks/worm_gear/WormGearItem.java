@@ -1,4 +1,4 @@
-package me.ci.moregears.items;
+package me.ci.moregears.blocks.worm_gear;
 
 import static com.simibubi.create.content.contraptions.base.RotatedPillarKineticBlock.AXIS;
 
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import mcp.MethodsReturnNonnullByDefault;
 import me.ci.moregears.CreateMoreGears;
-import me.ci.moregears.blocks.WormGearBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -70,13 +69,13 @@ public class WormGearItem extends CogwheelBlockItem {
 
         @Override
         public PlacementOffset getOffset(
-                PlayerEntity player, World world, BlockState state, BlockPos pos, BlockRayTraceResult ray) {
+            PlayerEntity player, World world, BlockState state, BlockPos pos, BlockRayTraceResult ray) {
 
             if (hitOnShaft(state, ray))
                 return PlacementOffset.fail();
 
             List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(
-                    pos, ray.getLocation(), state.getValue(AXIS));
+                pos, ray.getLocation(), state.getValue(AXIS));
 
             for (Direction dir : directions) {
                 BlockPos newPos = pos.relative(dir);
@@ -95,10 +94,10 @@ public class WormGearItem extends CogwheelBlockItem {
 
         private static boolean hitOnShaft(BlockState state, BlockRayTraceResult ray) {
             return AllShapes.SIX_VOXEL_POLE
-                    .get(state.getValue(AXIS))
-                    .bounds()
-                    .inflate(0.001)
-                    .contains(ray.getLocation().subtract(ray.getLocation().align(Iterate.axisSet)));
+                .get(state.getValue(AXIS))
+                .bounds()
+                .inflate(0.001)
+                .contains(ray.getLocation().subtract(ray.getLocation().align(Iterate.axisSet)));
         }
     }
 }

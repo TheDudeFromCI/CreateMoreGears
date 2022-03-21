@@ -1,4 +1,4 @@
-package me.ci.moregears.blocks;
+package me.ci.moregears.blocks.worm_gear;
 
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.contraptions.relays.elementary.CogWheelBlock;

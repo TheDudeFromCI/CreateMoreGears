@@ -1,4 +1,4 @@
-package me.ci.moregears.tiles;
+package me.ci.moregears.blocks.worm_gear;
 
 import static net.minecraft.state.properties.BlockStateProperties.AXIS;
 
@@ -6,7 +6,6 @@ import com.simibubi.create.content.contraptions.base.KineticTileEntity;
 import com.simibubi.create.content.contraptions.relays.elementary.ICogWheel;
 import com.simibubi.create.content.contraptions.relays.elementary.SimpleKineticTileEntity;
 
-import me.ci.moregears.blocks.WormGearBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction.Axis;
@@ -19,12 +18,12 @@ public class WormGearTile extends SimpleKineticTileEntity {
 
     @Override
     public float propagateRotationTo(
-            KineticTileEntity target,
-            BlockState stateFrom,
-            BlockState stateTo,
-            BlockPos diff,
-            boolean connectedViaAxis,
-            boolean connectedViaCogs) {
+        KineticTileEntity target,
+        BlockState stateFrom,
+        BlockState stateTo,
+        BlockPos diff,
+        boolean connectedViaAxis,
+        boolean connectedViaCogs) {
 
         if (connectedViaAxis) {
             // Default propagation
