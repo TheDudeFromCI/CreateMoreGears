@@ -5,9 +5,13 @@ import com.simibubi.create.repack.registrate.util.NonNullLazyValue;
 
 import me.ci.moregears.registry.ModBlockPartials;
 import me.ci.moregears.registry.ModBlocks;
-import me.ci.moregears.registry.ModItemGroups;
+import me.ci.moregears.registry.ModItems;
 import me.ci.moregears.registry.ModTiles;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import software.bernie.geckolib3.GeckoLib;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,9 +30,13 @@ public class CreateMoreGears {
     }
 
     public CreateMoreGears() {
-        ModItemGroups.register();
-        ModBlocks.register();
+        GeckoLib.initialize();
+
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModBlocks.REGISTER.register(bus);
+        ModTiles.REGISTER.register(bus);
+        ModItems.REGISTER.register(bus);
+
         ModBlockPartials.register();
-        ModTiles.register();
     }
 }

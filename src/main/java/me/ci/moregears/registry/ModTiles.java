@@ -6,14 +6,19 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.repack.registrate.util.entry.TileEntityEntry;
 
 import me.ci.moregears.CreateMoreGears;
-import me.ci.moregears.blocks.ballista.BallistaCog;
-import me.ci.moregears.blocks.ballista.BallistaRenderer;
 import me.ci.moregears.blocks.ballista.BallistaTile;
 import me.ci.moregears.blocks.worm_gear.WormGearTile;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public final class ModTiles {
 
     private static final CreateRegistrate REGISTRATE = CreateMoreGears.getRegistrate();
+
+    public static final DeferredRegister<TileEntityType<?>> REGISTER = DeferredRegister
+        .create(ForgeRegistries.TILE_ENTITIES, CreateMoreGears.MOD_ID);
 
     public static final TileEntityEntry<WormGearTile> WORM_GEAR = REGISTRATE
         .tileEntity("worm_gear", WormGearTile::new)
@@ -22,16 +27,9 @@ public final class ModTiles {
         .renderer(() -> KineticTileEntityRenderer::new)
         .register();
 
-    public static final TileEntityEntry<BallistaTile> BALLISTA = REGISTRATE
-        .tileEntity("ballista", BallistaTile::new)
-        .instance(() -> BallistaCog::new)
-        .validBlock(ModBlocks.BALLISTA)
-        .renderer(() -> BallistaRenderer::new)
-        .register();
-
-    public static void register() {
-        // Just load the static fields
-    }
+    public static final RegistryObject<TileEntityType<BallistaTile>> BALLISTA = REGISTER
+        .register("ballista", () -> TileEntityType.Builder.of(BallistaTile::new,
+            ModBlocks.BALLISTA.get()).build(null));
 
     private ModTiles() {
     }

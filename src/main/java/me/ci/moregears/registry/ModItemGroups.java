@@ -13,10 +13,6 @@ public final class ModItemGroups {
         }
     };
 
-    public static void register() {
-        // Load static fields
-    }
-
     private ModItemGroups() {
     }
 }

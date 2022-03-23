@@ -31,6 +31,12 @@ repositories {
         url = 'https://maven.tterrag.com'
     }
 
+    // This maven repository hosts geckolib
+    maven {
+
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
+
     // This maven repository proxies requests to the CurseForge API. This will
     // allow mods without traditional mavens to be used in a dev environment.
     // They use the pattern curse.maven:<descriptor>-<projectid>:<fileid> for

@@ -19,5 +19,4 @@ public class BallistaCog extends SingleRotatingInstance {
         return getRotatingMaterial()
             .getModel(ModBlockPartials.BALLISTA_COGWHEEL, tile.getBlockState());
     }
-
 }
