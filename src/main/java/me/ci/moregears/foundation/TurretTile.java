@@ -94,7 +94,7 @@ public abstract class TurretTile extends AnimatedKineticTile implements IReloada
         this.target = null;
     }
 
-    private void tickAim() {
+    protected void tickAim() {
         ITurretTarget aimTarget = getAimTarget();
         if (aimTarget == null)
             return;
