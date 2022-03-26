@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format_version": "4.0",
-		"creation_time": 1648114516,
+		"creation_time": 1648311599,
 		"model_format": "animated_entity_model",
 		"box_uv": false
 	},
@@ -2034,7 +2034,7 @@
 			"override": false,
 			"length": 0.66667,
 			"snapping": 24,
-			"selected": true,
+			"selected": false,
 			"saved": true,
 			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
 			"anim_time_update": "",

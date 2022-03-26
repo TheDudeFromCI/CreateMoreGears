@@ -11,7 +11,6 @@ import net.minecraft.util.math.vector.Vector3d;
 public abstract class AimmingTile extends AnimatedKineticTile implements IAimmable {
 
     protected ITurretTarget target;
-    protected int aimTicks;
     protected float yaw;
     protected float pitch;
 
@@ -57,7 +56,6 @@ public abstract class AimmingTile extends AnimatedKineticTile implements IAimmab
     @Override
     protected void write(CompoundNBT compound, boolean clientPacket) {
         super.write(compound, clientPacket);
-        compound.putInt("AimTicks", this.aimTicks);
         compound.putFloat("Yaw", this.yaw);
         compound.putFloat("Pitch", this.pitch);
     }
@@ -65,7 +63,6 @@ public abstract class AimmingTile extends AnimatedKineticTile implements IAimmab
     @Override
     protected void fromTag(BlockState state, CompoundNBT compound, boolean clientPacket) {
         super.fromTag(state, compound, clientPacket);
-        this.aimTicks = compound.getInt("AimTicks");
         this.yaw = compound.getFloat("Yaw");
         this.pitch = compound.getFloat("Pitch");
         this.target = null;
@@ -82,18 +79,11 @@ public abstract class AimmingTile extends AnimatedKineticTile implements IAimmab
     }
 
     @Override
-    public boolean isAimming() {
-        return this.aimTicks > 0;
-    }
-
-    @Override
-    public int getAimTicksRemaining() {
-        return this.aimTicks;
-    }
-
-    @Override
-    public void resetAim() {
-        this.aimTicks = getAimTicks();
+    public boolean tickAim(float maxAngle) {
+        boolean finishedAimming = IAimmable.super.tickAim(maxAngle);
         setChanged();
+        sendData(); // TODO Send smaller packets
+
+        return finishedAimming;
     }
 }

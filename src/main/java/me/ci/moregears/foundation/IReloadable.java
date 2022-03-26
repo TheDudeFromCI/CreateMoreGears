@@ -4,13 +4,17 @@ public interface IReloadable {
 
     boolean hasAmmo();
 
-    boolean isReloading();
-
-    default int getReloadTicks() {
-        return 60;
-    }
-
     int getReloadTicksRemaining();
 
+    int getCooldownTicksRemaining();
+
+    int getUnloadTicksRemaining();
+
     void reload();
+
+    int getReloadTicks();
+
+    int getCooldownTicks();
+
+    int getUnloadTicks();
 }

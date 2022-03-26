@@ -6,10 +6,12 @@ import me.ci.moregears.foundation.EntityTurretTarget;
 import me.ci.moregears.foundation.TurretTile;
 import me.ci.moregears.registry.ModTiles;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -55,6 +57,26 @@ public class BallistaTile extends TurretTile {
     }
 
     @Override
+    public int getReloadTicks() {
+        return 40;
+    }
+
+    @Override
+    public int getCooldownTicks() {
+        return 23;
+    }
+
+    @Override
+    public int getUnloadTicks() {
+        return 15;
+    }
+
+    @Override
+    protected float getAimSpeed() {
+        return 0.1f;
+    }
+
+    @Override
     protected void lookForTargets() {
         if (getAimTarget() != null)
             return;
@@ -69,7 +91,14 @@ public class BallistaTile extends TurretTile {
     @Override
     protected void fire() {
         this.inventory.extractItem(0, 1, false);
-        // TODO Spawn arrow
+
+        Vector3d pos = getAimPos();
+        Vector3d target = getAimTarget().getPosition();
+        Vector3d delta = target.subtract(pos).normalize();
+
+        ArrowEntity arrow = new ArrowEntity(this.level, pos.x, pos.y, pos.z);
+        arrow.shoot(delta.x, delta.y, delta.z, 1.1f, 6f);
+        this.level.addFreshEntity(arrow);
     }
 
     @Override

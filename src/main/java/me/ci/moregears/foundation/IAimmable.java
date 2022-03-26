@@ -66,27 +66,23 @@ public interface IAimmable {
             .collect(Collectors.toList());
     }
 
-    boolean isAimming();
-
-    default int getAimTicks() {
-        return 60;
-    }
-
-    int getAimTicksRemaining();
-
-    void resetAim();
-
-    default void tickAim() {
+    default boolean tickAim(float maxAngle) {
         ITurretTarget aimTarget = getAimTarget();
         if (aimTarget == null)
-            return;
+            return false;
 
         Vector3d crossbow = getAimPos();
         Vector3d targetPos = aimTarget.getPosition();
         float targetYaw = -calcTargetYaw(crossbow, targetPos);
         float targetPitch = calcTargetPitch(crossbow, targetPos);
 
-        setYaw(targetYaw);
-        setPitch(targetPitch);
+        float stepYaw = MathHelper.approachDegrees(getYaw(), targetYaw, maxAngle);
+        float stepPitch = MathHelper.approachDegrees(getPitch(), targetPitch, maxAngle);
+
+        setYaw(stepYaw);
+        setPitch(stepPitch);
+
+        return MathHelper.equal(targetYaw, stepYaw)
+            && MathHelper.equal(targetPitch, stepPitch);
     }
 }

@@ -10,7 +10,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 public abstract class TurretTile extends AimmingTile implements IReloadable {
 
     public enum TurretState {
-        IDLE, RELOADING, AIMMING, FIRING, UNLOADING
+        IDLE, RELOADING, AIMMING, COOLING, UNLOADING
     }
 
     private final AnimationBuilder idleAnimation;
@@ -20,6 +20,8 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     private final AnimationBuilder unloadingAnimation;
 
     private int reloadTicks;
+    private int cooldownTicks;
+    private int unloadTicks;
     private TurretState state;
 
     protected TurretTile(TileEntityType<?> typeIn, String tileName) {
@@ -45,7 +47,6 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
 
         this.state = TurretState.IDLE;
         reload();
-        resetAim();
     }
 
     @Override
@@ -54,8 +55,19 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     }
 
     @Override
+    public int getCooldownTicksRemaining() {
+        return this.cooldownTicks;
+    }
+
+    @Override
+    public int getUnloadTicksRemaining() {
+        return this.unloadTicks;
+    }
+
+    @Override
     public void reload() {
         this.reloadTicks = getReloadTicks();
+        this.cooldownTicks = getCooldownTicks();
         setChanged();
     }
 
@@ -67,6 +79,8 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     protected void write(CompoundNBT compound, boolean clientPacket) {
         super.write(compound, clientPacket);
         compound.putInt("ReloadTicks", this.reloadTicks);
+        compound.putInt("CooldownTicks", this.cooldownTicks);
+        compound.putInt("UnloadTicks", this.unloadTicks);
         compound.putInt("TurretState", this.state.ordinal());
     }
 
@@ -74,6 +88,8 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     protected void fromTag(BlockState state, CompoundNBT compound, boolean clientPacket) {
         super.fromTag(state, compound, clientPacket);
         this.reloadTicks = compound.getInt("ReloadTicks");
+        this.cooldownTicks = compound.getInt("CooldownTicks");
+        this.unloadTicks = compound.getInt("UnloadTicks");
         this.state = TurretState.values()[compound.getInt("TurretState")];
     }
 
@@ -83,9 +99,15 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
 
         switch (this.state) {
             case IDLE:
-            case UNLOADING:
-            case FIRING:
                 tickIdleState();
+                break;
+
+            case UNLOADING:
+                tickUnloadingState();
+                break;
+
+            case COOLING:
+                tickCoolingState();
                 break;
 
             case RELOADING:
@@ -101,60 +123,99 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     private void tickIdleState() {
         if (hasAmmo()) {
             this.state = TurretState.RELOADING;
+            setChanged();
             reload();
         }
+    }
+
+    private void tickUnloadingState() {
+        tickUnload();
+        if (this.unloadTicks == 0) {
+            this.state = TurretState.IDLE;
+            this.unloadTicks = getUnloadTicks();
+            setChanged();
+        }
+    }
+
+    private void tickCoolingState() {
+        tickCooldown();
+        if (this.cooldownTicks == 0) {
+            this.state = TurretState.IDLE;
+            this.cooldownTicks = getCooldownTicks();
+            setChanged();
+        }
+    }
+
+    private float getAimMaxAngle() {
+        return Math.abs(getSpeed() * getAimSpeed());
     }
 
     private void tickReloadState() {
         if (!hasAmmo()) {
             this.state = TurretState.IDLE;
+            setChanged();
             reload();
             return;
         }
 
-        if (!isReloading()) {
+        tickReload();
+        tickAim(getAimMaxAngle());
+
+        if (this.reloadTicks == 0) {
             lookForTargets();
             if (getAimTarget() != null) {
                 this.state = TurretState.AIMMING;
-                resetAim();
+                setChanged();
+            } else {
+                this.state = TurretState.UNLOADING;
+                setChanged();
+                reload();
             }
-
-            return;
         }
-
-        this.reloadTicks--;
-        setChanged();
     }
 
     private void tickAimState() {
         if (!hasAmmo()) {
             this.state = TurretState.UNLOADING;
+            setChanged();
             reload();
-            resetAim();
             return;
         }
 
-        if (!isAimming()) {
-            this.state = TurretState.FIRING;
-            fire();
+        lookForTargets();
+        if (getAimTarget() == null) {
+            this.state = TurretState.UNLOADING;
+            setChanged();
             reload();
-            resetAim();
-
-            if (forgetTargetOnShoot())
-                setAimTarget(null);
-
             return;
         }
 
-        tickAim();
-        this.aimTicks--;
+        if (!tickAim(getAimMaxAngle()))
+            return;
+
+        fire();
+        reload();
+
+        this.state = TurretState.COOLING;
         setChanged();
-        sendData();
+
+        if (forgetTargetOnShoot())
+            setAimTarget(null);
     }
 
-    @Override
-    public boolean isReloading() {
-        return this.reloadTicks > 0;
+    private void tickReload() {
+        this.reloadTicks--;
+        setChanged();
+    }
+
+    private void tickCooldown() {
+        this.cooldownTicks--;
+        setChanged();
+    }
+
+    private void tickUnload() {
+        this.unloadTicks--;
+        setChanged();
     }
 
     @Override
@@ -172,7 +233,7 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
                 event.getController().setAnimation(this.readyAnimation);
                 break;
 
-            case FIRING:
+            case COOLING:
                 event.getController().setAnimation(this.fireAnimation);
                 break;
 
@@ -185,6 +246,8 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     }
 
     protected abstract void lookForTargets();
+
+    protected abstract float getAimSpeed();
 
     protected abstract void fire();
 }
