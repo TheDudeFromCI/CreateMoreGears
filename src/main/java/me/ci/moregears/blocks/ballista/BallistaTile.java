@@ -68,8 +68,8 @@ public class BallistaTile extends TurretTile {
 
     @Override
     protected void fire() {
-        // TODO Auto-generated method stub
-
+        this.inventory.extractItem(0, 1, false);
+        // TODO Spawn arrow
     }
 
     @Override

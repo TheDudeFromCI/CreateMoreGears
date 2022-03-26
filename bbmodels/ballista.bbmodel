@@ -1,7 +1,7 @@
 {
 	"meta": {
 		"format_version": "4.0",
-		"creation_time": 1647965039,
+		"creation_time": 1648114516,
 		"model_format": "animated_entity_model",
 		"box_uv": false
 	},
@@ -1315,7 +1315,7 @@
 											"color": 0,
 											"uuid": "3520ef8a-7d17-0b6a-295c-fbe589f5f173",
 											"export": true,
-											"isOpen": true,
+											"isOpen": false,
 											"locked": false,
 											"visibility": true,
 											"autouv": 0,
@@ -1328,7 +1328,7 @@
 													"color": 0,
 													"uuid": "02e4c394-f536-af14-15f5-239ac625e1c0",
 													"export": true,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1341,7 +1341,7 @@
 															"color": 0,
 															"uuid": "11d28308-44b4-e2af-21c4-be2b27920c3b",
 															"export": true,
-															"isOpen": true,
+															"isOpen": false,
 															"locked": false,
 															"visibility": true,
 															"autouv": 0,
@@ -1358,7 +1358,7 @@
 											"color": 0,
 											"uuid": "29fe6799-bfa0-36fc-e8c8-f3d91205d54a",
 											"export": true,
-											"isOpen": true,
+											"isOpen": false,
 											"locked": false,
 											"visibility": true,
 											"autouv": 0,
@@ -1371,7 +1371,7 @@
 													"color": 0,
 													"uuid": "39a967f3-1a37-158d-0a7f-0dc78a53ca49",
 													"export": true,
-													"isOpen": true,
+													"isOpen": false,
 													"locked": false,
 													"visibility": true,
 													"autouv": 0,
@@ -1384,7 +1384,7 @@
 															"color": 0,
 															"uuid": "6e1fe332-ba9e-2304-4a5b-a95b2e0855d4",
 															"export": true,
-															"isOpen": true,
+															"isOpen": false,
 															"locked": false,
 															"visibility": true,
 															"autouv": 0,
@@ -1441,8 +1441,8 @@
 			"length": 0,
 			"snapping": 24,
 			"selected": false,
-			"saved": false,
-			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/ballista.animation",
+			"saved": true,
+			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -1537,9 +1537,9 @@
 			"override": false,
 			"length": 0,
 			"snapping": 24,
-			"selected": true,
-			"saved": false,
-			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/ballista.animation",
+			"selected": false,
+			"saved": true,
+			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -1636,7 +1636,7 @@
 			"snapping": 24,
 			"selected": false,
 			"saved": true,
-			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/ballista.animation",
+			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -1836,7 +1836,7 @@
 			"snapping": 24,
 			"selected": false,
 			"saved": true,
-			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/ballista.animation",
+			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
 			"anim_time_update": "",
 			"blend_weight": "",
 			"start_delay": "",
@@ -2020,6 +2020,159 @@
 							],
 							"uuid": "64fa410f-4f6d-1d3c-b1a5-19214e3f477f",
 							"time": 1.5,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				}
+			}
+		},
+		{
+			"uuid": "4b4c0bdc-b67f-a235-ffc3-1b8365343311",
+			"name": "animation.ballista.unload",
+			"loop": "hold",
+			"override": false,
+			"length": 0.66667,
+			"snapping": 24,
+			"selected": true,
+			"saved": true,
+			"path": "/home/thedudefromci/workshop/CreateMoreGears/src/main/resources/assets/createmoregears/animations/block/ballista.animation.json",
+			"anim_time_update": "",
+			"blend_weight": "",
+			"start_delay": "",
+			"loop_delay": "",
+			"animators": {
+				"6d4124f2-b11f-0de2-0928-0a57411599e3": {
+					"name": "trigger_gear",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "bc59ff29-c841-155c-c9ad-276b0609014d",
+							"time": 0.66667,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "rotation",
+							"data_points": [
+								{
+									"x": "360*2\n",
+									"y": 0,
+									"z": 0
+								}
+							],
+							"uuid": "cab190b6-7acc-ffc3-7393-48958fc6d3f0",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"c4493e7f-a3be-32b6-df4e-a31adf60e1da": {
+					"name": "extension",
+					"type": "bone",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "0"
+								}
+							],
+							"uuid": "905ea0de-d09c-e400-c402-04c2f6132f82",
+							"time": 0.66667,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": 0,
+									"z": "4"
+								}
+							],
+							"uuid": "052e1a3c-f3d6-ddb2-6e66-33afd348989f",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"63402d6d-3757-efe5-af92-1ce67d9608dd": {
+					"name": "Right Arm IK Parent",
+					"type": "null_object",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "-3"
+								}
+							],
+							"uuid": "b1c69751-4f16-3fd4-ec3e-efb57473a430",
+							"time": 0.66667,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": 0,
+									"z": "-22"
+								}
+							],
+							"uuid": "78f70fb1-4f1a-5b37-92c2-d7d6a5e1cb44",
+							"time": 0,
+							"color": -1,
+							"interpolation": "linear"
+						}
+					]
+				},
+				"3031b3ba-7f3b-d207-d3df-9c02bc1379bf": {
+					"name": "Left Arm IK Parent",
+					"type": "null_object",
+					"keyframes": [
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": "0",
+									"y": "0",
+									"z": "-3"
+								}
+							],
+							"uuid": "933805e2-136c-8e52-a4ba-b90d1e36680f",
+							"time": 0.66667,
+							"color": -1,
+							"interpolation": "linear"
+						},
+						{
+							"channel": "position",
+							"data_points": [
+								{
+									"x": 0,
+									"y": 0,
+									"z": "-22"
+								}
+							],
+							"uuid": "c90dc96b-46fe-b922-b1f1-a5a9935ca88e",
+							"time": 0,
 							"color": -1,
 							"interpolation": "linear"
 						}

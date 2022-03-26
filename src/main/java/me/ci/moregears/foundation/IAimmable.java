@@ -12,9 +12,13 @@ import net.minecraft.world.World;
 
 public interface IAimmable {
 
-    double getYaw();
+    float getYaw();
 
-    double getPitch();
+    float getPitch();
+
+    void setYaw(float yaw);
+
+    void setPitch(float pitch);
 
     ITurretTarget getAimTarget();
 
@@ -23,25 +27,27 @@ public interface IAimmable {
     Vector3d getAimPos();
 
     default boolean forgetTargetOnShoot() {
-        return false;
+        return true;
     }
 
     default float getRange() {
         return 16f;
     }
 
-    default double calcTargetYaw(Vector3d center, Vector3d target) {
+    default float calcTargetYaw(Vector3d center, Vector3d target) {
         double d0 = target.x - center.x;
         double d1 = target.z - center.z;
-        return (MathHelper.atan2(d1, d0) * (180.0 / Math.PI)) - 90.0;
+        double rad = MathHelper.atan2(d1, d0) - Math.PI / 2;
+        return (float) Math.toDegrees(rad);
     }
 
-    default double calcTargetPitch(Vector3d center, Vector3d target) {
+    default float calcTargetPitch(Vector3d center, Vector3d target) {
         double d0 = target.x - center.x;
         double d1 = target.y - center.y;
         double d2 = target.z - center.z;
         double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
-        return -MathHelper.atan2(d1, d3) * (180.0 / Math.PI);
+        double rad = -MathHelper.atan2(d1, d3);
+        return (float) Math.toDegrees(rad);
     }
 
     default List<EntityTurretTarget> lookForMobTargets(World world) {
@@ -58,5 +64,29 @@ public interface IAimmable {
             .filter(EntityTurretTarget::canSeeTarget)
             .sorted((a, b) -> Double.compare(a.getEntity().distanceToSqr(aim), b.getEntity().distanceToSqr(aim)))
             .collect(Collectors.toList());
+    }
+
+    boolean isAimming();
+
+    default int getAimTicks() {
+        return 60;
+    }
+
+    int getAimTicksRemaining();
+
+    void resetAim();
+
+    default void tickAim() {
+        ITurretTarget aimTarget = getAimTarget();
+        if (aimTarget == null)
+            return;
+
+        Vector3d crossbow = getAimPos();
+        Vector3d targetPos = aimTarget.getPosition();
+        float targetYaw = -calcTargetYaw(crossbow, targetPos);
+        float targetPitch = calcTargetPitch(crossbow, targetPos);
+
+        setYaw(targetYaw);
+        setPitch(targetPitch);
     }
 }

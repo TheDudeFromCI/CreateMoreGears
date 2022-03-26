@@ -3,23 +3,30 @@ package me.ci.moregears.foundation;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
-public abstract class TurretTile extends AnimatedKineticTile implements IReloadable, IAimmable {
+public abstract class TurretTile extends AimmingTile implements IReloadable {
 
+    public enum TurretState {
+        IDLE, RELOADING, AIMMING, FIRING, UNLOADING
+    }
+
+    private final AnimationBuilder idleAnimation;
     private final AnimationBuilder drawAnimation;
     private final AnimationBuilder fireAnimation;
-    private ITurretTarget target;
+    private final AnimationBuilder readyAnimation;
+    private final AnimationBuilder unloadingAnimation;
+
     private int reloadTicks;
-    private double yaw;
-    private double pitch;
+    private TurretState state;
 
     protected TurretTile(TileEntityType<?> typeIn, String tileName) {
-        super(typeIn, tileName);
+        super(typeIn);
+
+        this.idleAnimation = new AnimationBuilder()
+            .addAnimation("animation." + tileName + ".idle", true);
 
         this.drawAnimation = new AnimationBuilder()
             .addAnimation("animation." + tileName + ".draw", false)
@@ -29,17 +36,16 @@ public abstract class TurretTile extends AnimatedKineticTile implements IReloada
             .addAnimation("animation." + tileName + ".fire", false)
             .addAnimation("animation." + tileName + ".idle", true);
 
+        this.readyAnimation = new AnimationBuilder()
+            .addAnimation("animation." + tileName + ".ready", true);
+
+        this.unloadingAnimation = new AnimationBuilder()
+            .addAnimation("animation." + tileName + ".unload", false) // TODO Make unloading animation
+            .addAnimation("animation." + tileName + ".idle", true);
+
+        this.state = TurretState.IDLE;
         reload();
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    protected void playDrawAnimation() {
-        playAnimation(this.drawAnimation);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    protected void playFireAnimation() {
-        playAnimation(this.fireAnimation);
+        resetAim();
     }
 
     @Override
@@ -50,101 +56,132 @@ public abstract class TurretTile extends AnimatedKineticTile implements IReloada
     @Override
     public void reload() {
         this.reloadTicks = getReloadTicks();
+        setChanged();
     }
 
     public boolean canReadyShot() {
-        return getSpeed() != 0 /* && hasAmmo() */ && getAimTarget() != null;
-    }
-
-    @Override
-    public ITurretTarget getAimTarget() {
-        if (this.target != null && !this.target.isStillValid())
-            this.target = null;
-
-        return this.target;
-    }
-
-    @Override
-    public void setAimTarget(ITurretTarget target) {
-        this.target = target;
-    }
-
-    public double getYaw() {
-        return this.yaw;
-    }
-
-    public double getPitch() {
-        return this.pitch;
+        return getSpeed() != 0 && hasAmmo() && getAimTarget() != null;
     }
 
     @Override
     protected void write(CompoundNBT compound, boolean clientPacket) {
         super.write(compound, clientPacket);
         compound.putInt("ReloadTicks", this.reloadTicks);
-        compound.putDouble("Yaw", this.yaw);
-        compound.putDouble("Pitch", this.pitch);
+        compound.putInt("TurretState", this.state.ordinal());
     }
 
     @Override
     protected void fromTag(BlockState state, CompoundNBT compound, boolean clientPacket) {
         super.fromTag(state, compound, clientPacket);
         this.reloadTicks = compound.getInt("ReloadTicks");
-        this.yaw = compound.getDouble("Yaw");
-        this.pitch = compound.getDouble("Pitch");
-        this.target = null;
-    }
-
-    protected void tickAim() {
-        ITurretTarget aimTarget = getAimTarget();
-        if (aimTarget == null)
-            return;
-
-        Vector3d crossbow = getAimPos();
-        Vector3d targetPos = aimTarget.getPosition();
-        double targetYaw = -calcTargetYaw(crossbow, targetPos);
-        double targetPitch = calcTargetPitch(crossbow, targetPos);
-
-        this.yaw = targetYaw;
-        this.pitch = targetPitch;
-        setChanged();
-    }
-
-    @Override
-    public Vector3d getAimPos() {
-        BlockPos pos = getBlockPos();
-        return new Vector3d(pos.getX() + 0.5, pos.getY() + getAimHeight(), pos.getZ() + 0.5);
-    }
-
-    public double getAimHeight() {
-        return 0.5;
+        this.state = TurretState.values()[compound.getInt("TurretState")];
     }
 
     @Override
     public void tick() {
         super.tick();
-        lookForTargets();
 
-        if (!canReadyShot()) {
+        switch (this.state) {
+            case IDLE:
+            case UNLOADING:
+            case FIRING:
+                tickIdleState();
+                break;
+
+            case RELOADING:
+                tickReloadState();
+                break;
+
+            case AIMMING:
+                tickAimState();
+                break;
+        }
+    }
+
+    private void tickIdleState() {
+        if (hasAmmo()) {
+            this.state = TurretState.RELOADING;
+            reload();
+        }
+    }
+
+    private void tickReloadState() {
+        if (!hasAmmo()) {
+            this.state = TurretState.IDLE;
             reload();
             return;
         }
 
-        tickAim();
-        if (this.reloadTicks > 0) {
-            this.reloadTicks--;
+        if (!isReloading()) {
+            lookForTargets();
+            if (getAimTarget() != null) {
+                this.state = TurretState.AIMMING;
+                resetAim();
+            }
+
             return;
         }
 
-        fire();
-        reload();
+        this.reloadTicks--;
+        setChanged();
+    }
 
-        if (forgetTargetOnShoot())
-            this.target = null;
+    private void tickAimState() {
+        if (!hasAmmo()) {
+            this.state = TurretState.UNLOADING;
+            reload();
+            resetAim();
+            return;
+        }
+
+        if (!isAimming()) {
+            this.state = TurretState.FIRING;
+            fire();
+            reload();
+            resetAim();
+
+            if (forgetTargetOnShoot())
+                setAimTarget(null);
+
+            return;
+        }
+
+        tickAim();
+        this.aimTicks--;
+        setChanged();
+        sendData();
     }
 
     @Override
     public boolean isReloading() {
         return this.reloadTicks > 0;
+    }
+
+    @Override
+    protected <E extends AnimatedKineticTile> PlayState animationController(AnimationEvent<E> event) {
+        switch (this.state) {
+            case IDLE:
+                event.getController().setAnimation(this.idleAnimation);
+                break;
+
+            case RELOADING:
+                event.getController().setAnimation(this.drawAnimation);
+                break;
+
+            case AIMMING:
+                event.getController().setAnimation(this.readyAnimation);
+                break;
+
+            case FIRING:
+                event.getController().setAnimation(this.fireAnimation);
+                break;
+
+            case UNLOADING:
+                event.getController().setAnimation(this.unloadingAnimation);
+                break;
+        }
+
+        return super.animationController(event);
     }
 
     protected abstract void lookForTargets();
