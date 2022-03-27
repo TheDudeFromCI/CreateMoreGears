@@ -82,7 +82,7 @@ public interface IAimmable {
         setYaw(stepYaw);
         setPitch(stepPitch);
 
-        return MathHelper.equal(targetYaw, stepYaw)
-            && MathHelper.equal(targetPitch, stepPitch);
+        return MathHelper.equal(MathHelper.wrapDegrees(targetYaw), MathHelper.wrapDegrees(stepYaw))
+            && MathHelper.equal(MathHelper.wrapDegrees(targetPitch), MathHelper.wrapDegrees(stepPitch));
     }
 }
