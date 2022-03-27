@@ -46,7 +46,6 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
             .addAnimation("animation." + tileName + ".idle", true);
 
         this.state = TurretState.IDLE;
-        reload();
     }
 
     @Override
@@ -62,13 +61,6 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     @Override
     public int getUnloadTicksRemaining() {
         return this.unloadTicks;
-    }
-
-    @Override
-    public void reload() {
-        this.reloadTicks = getReloadTicks();
-        this.cooldownTicks = getCooldownTicks();
-        setChanged();
     }
 
     public boolean canReadyShot() {
@@ -122,26 +114,31 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
 
     private void tickIdleState() {
         if (hasAmmo()) {
-            this.state = TurretState.RELOADING;
-            setChanged();
-            reload();
+            lookForTargets();
+            if (getAimTarget() != null) {
+                this.state = TurretState.RELOADING;
+                this.reloadTicks = getReloadTicks();
+                setChanged();
+            }
         }
     }
 
     private void tickUnloadingState() {
-        tickUnload();
-        if (this.unloadTicks == 0) {
+        this.unloadTicks--;
+        setChanged();
+
+        if (this.unloadTicks <= 0) {
             this.state = TurretState.IDLE;
-            this.unloadTicks = getUnloadTicks();
             setChanged();
         }
     }
 
     private void tickCoolingState() {
-        tickCooldown();
-        if (this.cooldownTicks == 0) {
+        this.cooldownTicks--;
+        setChanged();
+
+        if (this.cooldownTicks <= 0) {
             this.state = TurretState.IDLE;
-            this.cooldownTicks = getCooldownTicks();
             setChanged();
         }
     }
@@ -154,39 +151,40 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
         if (!hasAmmo()) {
             this.state = TurretState.IDLE;
             setChanged();
-            reload();
-            return;
-        }
-
-        tickReload();
-        tickAim(getAimMaxAngle());
-
-        if (this.reloadTicks == 0) {
-            lookForTargets();
-            if (getAimTarget() != null) {
-                this.state = TurretState.AIMMING;
-                setChanged();
-            } else {
-                this.state = TurretState.UNLOADING;
-                setChanged();
-                reload();
-            }
-        }
-    }
-
-    private void tickAimState() {
-        if (!hasAmmo()) {
-            this.state = TurretState.UNLOADING;
-            setChanged();
-            reload();
             return;
         }
 
         lookForTargets();
         if (getAimTarget() == null) {
             this.state = TurretState.UNLOADING;
+            this.unloadTicks = getUnloadTicks();
             setChanged();
-            reload();
+            return;
+        }
+
+        this.reloadTicks--;
+        tickAim(getAimMaxAngle());
+        setChanged();
+
+        if (this.reloadTicks <= 0) {
+            this.state = TurretState.AIMMING;
+            setChanged();
+        }
+    }
+
+    private void tickAimState() {
+        if (!hasAmmo()) {
+            this.state = TurretState.UNLOADING;
+            this.unloadTicks = getUnloadTicks();
+            setChanged();
+            return;
+        }
+
+        lookForTargets();
+        if (getAimTarget() == null) {
+            this.state = TurretState.UNLOADING;
+            this.unloadTicks = getUnloadTicks();
+            setChanged();
             return;
         }
 
@@ -194,28 +192,13 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
             return;
 
         fire();
-        reload();
 
         this.state = TurretState.COOLING;
+        this.cooldownTicks = getCooldownTicks();
         setChanged();
 
         if (forgetTargetOnShoot())
             setAimTarget(null);
-    }
-
-    private void tickReload() {
-        this.reloadTicks--;
-        setChanged();
-    }
-
-    private void tickCooldown() {
-        this.cooldownTicks--;
-        setChanged();
-    }
-
-    private void tickUnload() {
-        this.unloadTicks--;
-        setChanged();
     }
 
     @Override

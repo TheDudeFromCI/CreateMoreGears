@@ -10,8 +10,6 @@ public interface IReloadable {
 
     int getUnloadTicksRemaining();
 
-    void reload();
-
     int getReloadTicks();
 
     int getCooldownTicks();
