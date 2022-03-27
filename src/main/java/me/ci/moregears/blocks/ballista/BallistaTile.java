@@ -6,6 +6,7 @@ import me.ci.moregears.foundation.EntityTurretTarget;
 import me.ci.moregears.foundation.TurretTile;
 import me.ci.moregears.registry.ModTiles;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -90,15 +91,18 @@ public class BallistaTile extends TurretTile {
 
     @Override
     protected void fire() {
-        this.inventory.extractItem(0, 1, false);
+        ItemStack arrowItem = this.inventory.extractItem(0, 1, false);
 
         Vector3d pos = getAimPos();
         Vector3d target = getAimTarget().getPosition();
         Vector3d delta = target.subtract(pos).normalize();
+        pos = pos.add(delta.scale(0.5f));
 
         ArrowEntity arrow = new ArrowEntity(this.level, pos.x, pos.y, pos.z);
-        arrow.shoot(delta.x, delta.y, delta.z, 1.1f, 6f);
+        arrow.pickup = AbstractArrowEntity.PickupStatus.ALLOWED;
+        arrow.setEffectsFromItem(arrowItem);
         this.level.addFreshEntity(arrow);
+        arrow.shoot(delta.x, delta.y, delta.z, 1.1f, 6f);
     }
 
     @Override
