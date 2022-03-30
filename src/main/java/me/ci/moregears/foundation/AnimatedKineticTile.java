@@ -29,7 +29,9 @@ public abstract class AnimatedKineticTile extends KineticTileEntity implements I
         data.addAnimationController(new AnimationController<>(this, "main", 0, this::animationController));
     }
 
+    @SuppressWarnings({ "unchecked" })
     protected <E extends AnimatedKineticTile> PlayState animationController(AnimationEvent<E> event) {
+        event.getController().animationSpeed = getAnimationSpeed();
         return PlayState.CONTINUE;
     }
 
@@ -37,4 +39,6 @@ public abstract class AnimatedKineticTile extends KineticTileEntity implements I
     public boolean shouldRenderNormally() {
         return true;
     }
+
+    protected abstract double getAnimationSpeed();
 }

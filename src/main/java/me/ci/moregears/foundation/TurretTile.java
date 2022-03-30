@@ -89,6 +89,9 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
     public void tick() {
         super.tick();
 
+        if (this.level.isClientSide)
+            return;
+
         switch (this.state) {
             case IDLE:
                 tickIdleState();
@@ -143,10 +146,6 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
         }
     }
 
-    private float getAimMaxAngle() {
-        return Math.abs(getSpeed() * getAimSpeed());
-    }
-
     private void tickReloadState() {
         if (!hasAmmo()) {
             this.state = TurretState.IDLE;
@@ -163,7 +162,7 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
         }
 
         this.reloadTicks--;
-        tickAim(getAimMaxAngle());
+        tickAim(getAimSpeed());
         setChanged();
 
         if (this.reloadTicks <= 0) {
@@ -188,7 +187,7 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
             return;
         }
 
-        if (!tickAim(getAimMaxAngle()))
+        if (!tickAim(getAimSpeed()))
             return;
 
         fire();
@@ -226,6 +225,11 @@ public abstract class TurretTile extends AimmingTile implements IReloadable {
         }
 
         return super.animationController(event);
+    }
+
+    @Override
+    protected double getAnimationSpeed() {
+        return getSpeed() / 64.0;
     }
 
     protected abstract void lookForTargets();
