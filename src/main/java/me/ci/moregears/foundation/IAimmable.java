@@ -3,8 +3,8 @@ package me.ci.moregears.foundation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -26,12 +26,10 @@ public interface IAimmable {
 
     Vector3d getAimPos();
 
+    float getRange();
+
     default boolean forgetTargetOnShoot() {
         return true;
-    }
-
-    default float getRange() {
-        return 16f;
     }
 
     default float calcTargetYaw(Vector3d center, Vector3d target) {
@@ -57,11 +55,9 @@ public interface IAimmable {
 
         return world.getEntitiesOfClass(LivingEntity.class, bounds)
             .stream()
-            .filter(Entity::isAlive)
-            .filter(e -> !e.isInvisible())
-            .filter(e -> e.distanceToSqr(aim) < range * range)
+            .filter(e -> !(e instanceof PlayerEntity))
             .map(e -> new EntityTurretTarget(this, e))
-            .filter(EntityTurretTarget::canSeeTarget)
+            .filter(EntityTurretTarget::isStillValid)
             .sorted((a, b) -> Double.compare(a.getEntity().distanceToSqr(aim), b.getEntity().distanceToSqr(aim)))
             .collect(Collectors.toList());
     }
@@ -82,7 +78,7 @@ public interface IAimmable {
         setYaw(stepYaw);
         setPitch(stepPitch);
 
-        return MathHelper.equal(MathHelper.wrapDegrees(targetYaw), MathHelper.wrapDegrees(stepYaw))
-            && MathHelper.equal(MathHelper.wrapDegrees(targetPitch), MathHelper.wrapDegrees(stepPitch));
+        return MathHelper.abs(MathHelper.wrapDegrees(targetYaw) - MathHelper.wrapDegrees(stepYaw)) < 0.1
+            && MathHelper.abs(MathHelper.wrapDegrees(targetPitch) - MathHelper.wrapDegrees(stepPitch)) < 0.1;
     }
 }
